@@ -65,6 +65,10 @@ async function checkFire(image, io){
 io.on('connection', (socket) => {
   console.log('A user connected');
 
+  socket.on("camera", (req) => {
+    connectedID[socket.id] = req;
+  })
+
   socket.on('move', (req) => //req is in json format
   {
     //goes to DB to find the id of camera
@@ -86,22 +90,18 @@ io.on('connection', (socket) => {
 
   socket.on("image", (req) =>
   {
-    
-
-    io.emit("image", req.image) //base64
-  })
-
-  socket.on("test", (req) => {
-    const image = imageToBase64("./public/fire.jpeg")
-    checkFire(image, io)
-    io.emit("image", image)
+    const date = new Date
+    checkFire(req.image, io);
+    io.emit("image", {
+      img: req.image,
+      time: date.toDateString()
+    }) //base64
   })
 
   // Set up a disconnect event
   socket.on('disconnect', () => {
     console.log(socket.id + ' disconnected');
     delete connectedID[socket.id];
-    
   });
 });
 
