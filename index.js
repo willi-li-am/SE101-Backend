@@ -9,7 +9,6 @@ const server = http.createServer(app);
 const socketIo = require("socket.io");
 const fs = require("fs");
 const axios = require("axios");
-const defaultImage = imageToBase64("./images/cow.jpg");
 
 // Create a Socket.IO instance attached to the server
 const io = socketIo(server, {
@@ -29,11 +28,7 @@ const isConnected = (id) => {
   return false;
 };
 
-var lastImage = defaultImage;
-var lastTime = new Date();
-
 //why no work
-
 const imageToBase64 = (imagePath) => {
   // Read the image file as a buffer
   const imageBuffer = fs.readFileSync(imagePath);
@@ -44,6 +39,8 @@ const imageToBase64 = (imagePath) => {
   return base64Image;
 };
 
+var lastImage = imageToBase64("./images/cow.jpg");
+var lastTime = new Date();
 async function checkFire(image, io) {
   axios({
     method: "POST",
