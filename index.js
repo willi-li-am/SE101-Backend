@@ -7,7 +7,6 @@ const http = require('http');
 const app = express();
 const server = http.createServer(app);
 const socketIo = require("socket.io")
-const multer = require('multer')
 const fs = require('fs')
 const axios = require('axios')
 
@@ -26,11 +25,13 @@ const isConnected = (id) => {
   for (socketID in connectedID)
   {
     if (connectedID[socketID] == id)
-      return true;
+      return socketID;
   }
 
   return false;
 }
+
+var lastImage = "";
 
 const imageToBase64 = (imagePath) => {
   // Read the image file as a buffer
@@ -65,17 +66,25 @@ async function checkFire(image, io){
 io.on('connection', (socket) => {
   console.log('A user connected');
 
-  socket.on("camera", (req) => {
-    connectedID[socket.id] = req;
+  socket.on("join", (req) => {
+    if (req.type == "client")
+    {
+      socket.join("clients")
+    }
+    else
+    {
+      connectedID[socket.id] = req;
+      socket.join("cameras")
+    }
   })
 
   socket.on('move', (req) => //req is in json format
   {
     //goes to DB to find the id of camera
     const cameraID = isConnected(req.id);
-    if (cameraID)
+    if (cameraID != false)
     {
-      io.to(req.id).emit('move', req)
+      io.to(cameraID).emit('move', req)
     }
     else
     {
@@ -92,9 +101,9 @@ io.on('connection', (socket) => {
   {
     const date = new Date
     checkFire(req.image, io);
-    io.emit("image", {
+    io.to("clients").emit("image", {
       img: req.image,
-      time: date.toDateString()
+      time: date.toISOString()
     }) //base64
   })
 
