@@ -42,21 +42,28 @@ const imageToBase64 = (imagePath) => {
 var lastImage = imageToBase64("./images/cow.jpg");
 var lastTime = new Date();
 async function checkFire(image, io) {
-  axios({
-    method: "POST",
-    url: "https://detect.roboflow.com/wildfire_detection-slvoz/1",
-    params: {
-      api_key: "GeALLnJG9aiEqA6Ej9hZ",
-    },
-    data: image,
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  }).then((response) => {
-    if (response.data.predictions.length > 0) {
-      io.emit("alert");
-    }
-  });
+  try
+  {
+    axios({
+      method: "POST",
+      url: "https://detect.roboflow.com/wildfire_detection-slvoz/1",
+      params: {
+        api_key: "GeALLnJG9aiEqA6Ej9hZ",
+      },
+      data: image,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }).then((response) => {
+      if (response.data.predictions.length > 0) {
+        io.emit("alert");
+      }
+    });
+  }
+  catch(err)
+  {
+    console.log("fuck roboflow");
+  }
 }
 
 // Set up a connection event for Socket.IO
