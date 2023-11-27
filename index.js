@@ -72,7 +72,7 @@ io.on("connection", (socket) => {
     if (connected === true) {
       //expecting the request to contain:
       //     audio:  - an opus encoded audio file
-      io.to(connected).emit("sound", {
+      io.emit("sound", {
         audio: req.audio,
       });
     }
