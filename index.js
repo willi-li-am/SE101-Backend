@@ -65,14 +65,12 @@ io.on("connection", (socket) => {
   socket.on("sound", (req) => {
     //once we receive the sound event,
     //we expect to be connected to a camera
-    const connected = isConnected(req.id);
-    if (connected === true) {
-      //expecting the request to contain:
-      //     audio:  - an opus encoded audio file
-      io.emit("sound", {
-        audio: req.audio,
-      });
-    }
+
+    //expecting the request to contain:
+    //     audio:  - an opus encoded audio file
+    io.emit("sound", {
+      audio: req.audio,
+    });
     //TODO: add error checking :)
   });
   socket.on("join", (req) => {
