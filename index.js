@@ -66,6 +66,10 @@ async function checkFire(image, io){
 io.on('connection', (socket) => {
   console.log('A user connected');
 
+  socket.on("ping", (req) => {
+    io.emit("ping", req);
+  })
+
   socket.on("join", (req) => {
     if (req.type == "client")
     {
@@ -100,9 +104,9 @@ io.on('connection', (socket) => {
   socket.on("image", (req) =>
   {
     const date = new Date
-    checkFire(req.image, io);
+    checkFire(req, io);
     io.to("clients").emit("image", {
-      img: req.image,
+      img: req,
       time: date.toISOString()
     }) //base64
   })
