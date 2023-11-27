@@ -9,7 +9,7 @@ const server = http.createServer(app);
 const socketIo = require("socket.io");
 const fs = require("fs");
 const axios = require("axios");
-const defaultImage = require("image.js");
+const defaultImage = imageToBase64("./images/cow.jpg");
 
 // Create a Socket.IO instance attached to the server
 const io = socketIo(server, {
@@ -22,7 +22,7 @@ const io = socketIo(server, {
 const connectedID = {};
 
 const isConnected = (id) => {
-  for (const socketID in connectedID) {
+  for (socketID in connectedID) {
     if (connectedID[socketID] == id) return socketID;
   }
 
