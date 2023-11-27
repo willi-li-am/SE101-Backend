@@ -9,7 +9,7 @@ const server = http.createServer(app);
 const socketIo = require("socket.io");
 const fs = require("fs");
 const axios = require("axios");
-import { defaultImage } from "image.js";
+const defaultImage = require("image.js");
 
 // Create a Socket.IO instance attached to the server
 const io = socketIo(server, {
