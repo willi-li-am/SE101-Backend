@@ -116,7 +116,7 @@ io.on("connection", (socket) => {
     lastImage = req;
     const date = new Date();
     lastTime = date;
-    checkFire(req, io);
+    //checkFire(req, io);
     io.to("clients").emit("image", {
       img: req,
       time: date.toISOString(),
