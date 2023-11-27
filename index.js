@@ -35,6 +35,8 @@ var lastImage = "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBk
 
 var lastTime = new Date();
 
+//why no work
+
 const imageToBase64 = (imagePath) => {
   // Read the image file as a buffer
   const imageBuffer = fs.readFileSync(imagePath);
