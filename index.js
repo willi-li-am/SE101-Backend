@@ -20,6 +20,14 @@ const io = socketIo(server, {
 
 const connectedID = {};
 
+const configuration = {
+  iceServers: [
+    {
+      urls: ["stun:stun1.1.google.com:19302", "stun:stun2.1.google.com:19302"],
+    },
+  ],
+};
+
 const isConnected = (id) => {
   for (socketID in connectedID) {
     if (connectedID[socketID] == id) return socketID;
@@ -42,8 +50,7 @@ const imageToBase64 = (imagePath) => {
 var lastImage = imageToBase64("./images/cow.jpg");
 var lastTime = new Date();
 async function checkFire(image, io) {
-  try
-  {
+  try {
     axios({
       method: "POST",
       url: "https://detect.roboflow.com/wildfire_detection-slvoz/1",
@@ -59,27 +66,57 @@ async function checkFire(image, io) {
         io.emit("alert");
       }
     });
-  }
-  catch(err)
-  {
+  } catch (err) {
     console.log("fuck roboflow");
   }
 }
-
+let peerConnection = null;
 // Set up a connection event for Socket.IO
 io.on("connection", (socket) => {
   console.log("A user connected");
+  /*Web RTC 
+  -> Server expects to be the only peer connected to the raspberry pi.
+  PI initites connection by sending an offer message and the server responds with an answer
+  Web rtc takes care of the rest
+  */
+  socket.on("message", async (message) => {
+    if (message.type == "offer") {
+      console.log("Received an offer!");
+      peerConnection = new RTCPeerConnection(configuration);
+      let offer = message.offer;
+      await peerConnection.setRemoteDescription(offer);
+
+      let answer = await peerConnection.createAnswer();
+
+      await peerConnection.setLocalDescription(answer);
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.send({ type: "candidate", candidate: event.candidate });
+        }
+      };
+      peerConnection.ontrack = (event) => {
+        event.streams[0].getTracks().forEach((track) => {
+          io.to("clients").emit("track", { track: track });
+        });
+      };
+      io.to("cameras").emit("answer", {
+        answer: peerConnection.localDescription,
+      });
+    }
+  });
+
   socket.on("sound", (req) => {
     //once we receive the sound event,
     //we expect to be connected to a camera
 
     //expecting the request to contain:
-    //     audio:  - an opus encoded audio file
+    //     audio:  - an array of bytes representing the audio
     io.emit("sound", {
       audio: req.audio,
     });
     //TODO: add error checking :)
   });
+
   socket.on("join", (req) => {
     if (req.type == "client") {
       socket.join("clients");
