@@ -74,9 +74,9 @@ setInterval(() => {
   if (lastLastImage != lastImage)
   {
     lastLastImage = lastImage;
-    checkFire(lastImage, io)
+    //checkFire(lastImage, io)
   }
-}, 10000);
+}, 30000);
 
 // Set up a connection event for Socket.IO
 io.on("connection", (socket) => {
