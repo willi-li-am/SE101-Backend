@@ -39,8 +39,11 @@ const imageToBase64 = (imagePath) => {
   return base64Image;
 };
 
+
 var lastImage = imageToBase64("./images/cow.jpg");
 var lastTime = new Date();
+var lastLastImage = lastImage
+
 async function checkFire(image, io) {
   try
   {
@@ -66,9 +69,19 @@ async function checkFire(image, io) {
   }
 }
 
+setInterval(() => {
+  console.log("Checked fire")
+  if (lastLastImage == lastImage)
+  {
+    lastLastImage = lastImage;
+    checkFire(lastImage, io)
+  }
+}, 10000);
+
 // Set up a connection event for Socket.IO
 io.on("connection", (socket) => {
   console.log("A user connected");
+  
   socket.on("sound", (req) => {
     //once we receive the sound event,
     //we expect to be connected to a camera
@@ -115,6 +128,7 @@ io.on("connection", (socket) => {
 
   socket.on("image", (req) => {
     console.log("received image");
+    lastLastImage = lastImage;
     lastImage = req;
     const date = new Date();
     lastTime = date;
