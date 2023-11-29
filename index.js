@@ -75,6 +75,7 @@ io.on("connection", (socket) => {
 
     //expecting the request to contain:
     //     audio:  - an opus encoded audio file
+    console.log(req.audio);
     io.emit("sound", {
       audio: req.audio,
     });
@@ -113,6 +114,7 @@ io.on("connection", (socket) => {
   );
 
   socket.on("image", (req) => {
+    console.log("received image");
     lastImage = req;
     const date = new Date();
     lastTime = date;
@@ -122,6 +124,17 @@ io.on("connection", (socket) => {
       time: date.toISOString(),
     }); //base64
   });
+
+  socket.on("fire", (req) => {
+    lastImage = req;
+    const date = new Date();
+    lastTime = date;
+    checkFire(req, io);
+    io.to("clients").emit("image", {
+      img: req,
+      time: date.toISOString(),
+    });
+  })
 
   // Set up a disconnect event
   socket.on("disconnect", () => {
