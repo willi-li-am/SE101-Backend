@@ -45,6 +45,7 @@ var lastTime = new Date();
 var lastLastImage = lastImage
 
 async function checkFire(image, io) {
+  console.log("checked fire")
   try
   {
     axios({
@@ -70,7 +71,6 @@ async function checkFire(image, io) {
 }
 
 setInterval(() => {
-  console.log("Checked fire")
   if (lastLastImage == lastImage)
   {
     lastLastImage = lastImage;
