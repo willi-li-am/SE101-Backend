@@ -71,7 +71,7 @@ async function checkFire(image, io) {
 }
 
 setInterval(() => {
-  if (lastLastImage == lastImage)
+  if (lastLastImage != lastImage)
   {
     lastLastImage = lastImage;
     checkFire(lastImage, io)
