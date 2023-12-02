@@ -52,6 +52,7 @@ var lastTime = new Date();
 var lastLastImage = lastImage;
 
 async function checkFire(image, io) {
+  console.log("checked fire");
   try {
     axios({
       method: "POST",
@@ -75,12 +76,11 @@ async function checkFire(image, io) {
 let peerConnection = null;
 
 setInterval(() => {
-  console.log("Checked fire");
-  if (lastLastImage == lastImage) {
+  if (lastLastImage != lastImage) {
     lastLastImage = lastImage;
-    checkFire(lastImage, io);
+    //checkFire(lastImage, io)
   }
-}, 10000);
+}, 30000);
 
 // Set up a connection event for Socket.IO
 io.on("connection", (socket) => {
