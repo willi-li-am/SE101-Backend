@@ -49,6 +49,8 @@ const imageToBase64 = (imagePath) => {
 
 var lastImage = imageToBase64("./images/cow.jpg");
 var lastTime = new Date();
+var lastLastImage = lastImage;
+
 async function checkFire(image, io) {
   try {
     axios({
@@ -71,6 +73,15 @@ async function checkFire(image, io) {
   }
 }
 let peerConnection = null;
+
+setInterval(() => {
+  console.log("Checked fire");
+  if (lastLastImage == lastImage) {
+    lastLastImage = lastImage;
+    checkFire(lastImage, io);
+  }
+}, 10000);
+
 // Set up a connection event for Socket.IO
 io.on("connection", (socket) => {
   console.log("A user connected");
@@ -111,6 +122,7 @@ io.on("connection", (socket) => {
 
     //expecting the request to contain:
     //     audio:  - an array of bytes representing the audio
+    console.log(req.audio);
     io.emit("sound", {
       audio: req.audio,
     });
@@ -150,6 +162,8 @@ io.on("connection", (socket) => {
   );
 
   socket.on("image", (req) => {
+    console.log("received image");
+    lastLastImage = lastImage;
     lastImage = req;
     const date = new Date();
     lastTime = date;
@@ -158,6 +172,17 @@ io.on("connection", (socket) => {
       img: req,
       time: date.toISOString(),
     }); //base64
+  });
+
+  socket.on("fire", (req) => {
+    lastImage = req;
+    const date = new Date();
+    lastTime = date;
+    checkFire(req, io);
+    io.to("clients").emit("image", {
+      img: req,
+      time: date.toISOString(),
+    });
   });
 
   // Set up a disconnect event
